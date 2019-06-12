@@ -1,0 +1,25 @@
+rootProject.name = 'gradle-plugins-examples'
+
+includeBuild '..'
+
+include ":war:overlay"
+include ":war:overlay2"
+include ":war:archive-classes"
+
+include ":jsass:java"
+include ":jsass:web"
+include ":jsass:webjars"
+
+include ":aspectj:aspect"
+include ":aspectj:weaving"
+include ":aspectj:httpcore-nio"
+
+include ":lombok"
+
+include ":javadoc"
+
+include ":jacoco"
+include ":jacoco:sub-a"
+include ":jacoco:sub-b"
+
+include ":github"
