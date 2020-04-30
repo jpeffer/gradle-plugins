@@ -52,23 +52,23 @@ public class AspectJPostCompileWeavingPlugin implements Plugin<Project> {
 
         project.getConfigurations().getByName(sourceSet.getCompileOnlyConfigurationName()).extendsFrom(inpath);
 
-        project.getPlugins().withType(JavaPlugin.class, javaPlugin ->
-                project.getTasks().named(sourceSet.getCompileJavaTaskName(), JavaCompile.class, compileJava ->
-                        enhanceWithWeavingAction(compileJava, aspectpath, inpath, aspectjBasePlugin.getAspectjConfiguration())
-                )
-        );
+        project.getPlugins().withType(JavaPlugin.class, javaPlugin -> {
+            JavaCompile compileJava = (JavaCompile) project.getTasks().getByName(sourceSet.getCompileJavaTaskName());
 
-        project.getPlugins().withType(GroovyPlugin.class, groovyPlugin ->
-                project.getTasks().named(sourceSet.getCompileTaskName("groovy"), GroovyCompile.class, compileGroovy ->
-                        enhanceWithWeavingAction(compileGroovy, aspectpath, inpath, aspectjBasePlugin.getAspectjConfiguration())
-                )
-        );
+            enhanceWithWeavingAction(compileJava, aspectpath, inpath, aspectjBasePlugin.getAspectjConfiguration());
+        });
 
-        project.getPlugins().withType(ScalaBasePlugin.class, scalaBasePlugin ->
-                project.getTasks().named(sourceSet.getCompileTaskName("scala"), ScalaCompile.class, compileScala ->
-                        enhanceWithWeavingAction(compileScala, aspectpath, inpath, aspectjBasePlugin.getAspectjConfiguration())
-                )
-        );
+        project.getPlugins().withType(GroovyPlugin.class, groovyPlugin -> {
+            GroovyCompile compileGroovy = (GroovyCompile) project.getTasks().getByName(sourceSet.getCompileTaskName("groovy"));
+
+            enhanceWithWeavingAction(compileGroovy, aspectpath, inpath, aspectjBasePlugin.getAspectjConfiguration());
+        });
+
+        project.getPlugins().withType(ScalaBasePlugin.class, scalaBasePlugin -> {
+            ScalaCompile compileScala = (ScalaCompile) project.getTasks().getByName(sourceSet.getCompileTaskName("scala"));
+
+            enhanceWithWeavingAction(compileScala, aspectpath, inpath, aspectjBasePlugin.getAspectjConfiguration());
+        });
     }
 
     private void enhanceWithWeavingAction(AbstractCompile abstractCompile, Configuration aspectpath, Configuration inpath, Configuration aspectjConfiguration) {
