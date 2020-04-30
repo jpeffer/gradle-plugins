@@ -4,11 +4,11 @@ import io.freefair.gradle.plugins.aspectj.internal.AspectJCompileSpec;
 import io.freefair.gradle.plugins.aspectj.internal.AspectJCompiler;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import org.gradle.api.Action;
 import org.gradle.api.NonNullApi;
 import org.gradle.api.Task;
 import org.gradle.api.file.ConfigurableFileCollection;
+import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.ClasspathNormalizer;
@@ -17,7 +17,6 @@ import org.gradle.process.internal.JavaExecHandleFactory;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -38,11 +37,15 @@ public class AjcAction implements Action<Task> {
     private final JavaExecHandleFactory javaExecHandleFactory;
 
     @Inject
-    public AjcAction(ObjectFactory objectFactory, JavaExecHandleFactory javaExecHandleFactory) {
+    public AjcAction(ProjectLayout projectLayout, ObjectFactory objectFactory, JavaExecHandleFactory javaExecHandleFactory) {
         options = new AspectJCompileOptions(objectFactory);
-        classpath = objectFactory.fileCollection();
+        classpath = projectLayout.configurableFiles()
 
-        enabled = objectFactory.property(Boolean.class).convention(true);
+        enabled = objectFactory.property(Boolean.class);
+        if(enabled == null){
+            enabled.set(true);
+        }
+
         this.javaExecHandleFactory = javaExecHandleFactory;
     }
 
