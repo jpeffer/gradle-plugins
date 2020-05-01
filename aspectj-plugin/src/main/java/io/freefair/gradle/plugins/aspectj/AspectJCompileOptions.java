@@ -1,14 +1,18 @@
 package io.freefair.gradle.plugins.aspectj;
 
 import lombok.Data;
-import lombok.Getter;
-import org.graalvm.compiler.options.Option;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.model.ObjectFactory;
-import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
-import org.gradle.api.tasks.*;
+import org.gradle.api.tasks.Classpath;
+import org.gradle.api.tasks.Console;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.api.tasks.compile.AbstractOptions;
 import org.gradle.process.CommandLineArgumentProvider;
 
@@ -118,17 +122,25 @@ public class AspectJCompileOptions extends AbstractOptions {
     @Internal
     private AjcForkOptions forkOptions = new AjcForkOptions();
 
-    public AspectJCompileOptions(ObjectFactory objectFactory) {
-        inpath = objectFactory.fileCollection();
-        aspectpath = objectFactory.fileCollection();
-        outjar = objectFactory.fileProperty();
-        outxml = objectFactory.property(Boolean.class).convention(false);
-        outxmlfile = objectFactory.fileProperty();
-        sourceroots = objectFactory.fileCollection();
-        crossrefs = objectFactory.property(Boolean.class).convention(false);
-        bootclasspath = objectFactory.fileCollection();
-        extdirs = objectFactory.fileCollection();
+    public AspectJCompileOptions(ObjectFactory objectFactory, ConfigurableFileCollection configurableFileCollection, RegularFileProperty regularFileProperty) {
+        inpath = configurableFileCollection;
+        aspectpath = configurableFileCollection;
+        outjar = regularFileProperty;
+        outxml = getProperty(objectFactory.property(Boolean.class), false);
+        outxmlfile = regularFileProperty;
+        sourceroots = configurableFileCollection;
+        crossrefs = getProperty(objectFactory.property(Boolean.class), false);
+        bootclasspath = configurableFileCollection;
+        extdirs = configurableFileCollection;
         encoding = objectFactory.property(String.class);
-        verbose = objectFactory.property(Boolean.class).convention(false);
+        verbose = getProperty(objectFactory.property(Boolean.class), false);
+    }
+
+    private Property getProperty(Property property, Object defaultValue) {
+        if(property != null && property.getOrNull() == null) {
+            property.set(defaultValue);
+        }
+
+        return property;
     }
 }

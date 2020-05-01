@@ -16,13 +16,13 @@ import java.util.ArrayList;
 public class AspectjCompile extends AbstractCompile {
 
     @Classpath
-    private final ConfigurableFileCollection aspectjClasspath = getProject().getObjects().fileCollection();
+    private final ConfigurableFileCollection aspectjClasspath = getProject().files();
 
     @Nested
     private final CompileOptions options = getProject().getObjects().newInstance(CompileOptions.class);
 
     @Nested
-    private final AspectJCompileOptions ajcOptions = new AspectJCompileOptions(getProject().getObjects());
+    private final AspectJCompileOptions ajcOptions = new AspectJCompileOptions(getProject().getObjects(), aspectjClasspath, getProject().getLayout().fileProperty());
 
     @Override
     @TaskAction

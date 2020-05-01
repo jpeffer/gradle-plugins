@@ -38,11 +38,11 @@ public class AjcAction implements Action<Task> {
 
     @Inject
     public AjcAction(ProjectLayout projectLayout, ObjectFactory objectFactory, JavaExecHandleFactory javaExecHandleFactory) {
-        options = new AspectJCompileOptions(objectFactory);
-        classpath = projectLayout.configurableFiles()
+        classpath = this.getClasspath();
+        options = new AspectJCompileOptions(objectFactory, classpath,  projectLayout.fileProperty());
 
         enabled = objectFactory.property(Boolean.class);
-        if(enabled == null){
+        if(enabled != null && enabled.getOrNull() == null){
             enabled.set(true);
         }
 
